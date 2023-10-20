@@ -1,0 +1,53 @@
+# Maven specific
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+release.properties
+dependency-reduced-pom.xml
+
+# IDE files
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Eclipse
+.settings/
+.classpath
+.project
+
+# NetBeans
+nb-configuration.xml
+
+# Compiled class files
+*.class
+
+# Log files
+*.log
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# Maven Wrapper
+.mvn/wrapper/
+
+# Byte code
+*.class
+
+# Subversion
+.svn/
+
+# Log files
+*.log
+
+# macOS
+.DS_Store
+
+# Gradle
+build/
+.gradle/
+
+# Spring Boot
+target/
