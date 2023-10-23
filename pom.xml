@@ -1,8 +1,26 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>ainal.my.mainbase</groupId>
-  <artifactId>mainbase</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <name>Mainbase</name>
-  <description>The Main Base of Project</description>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>ainal.my.mainbase</groupId>
+	<artifactId>mainbase</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>Mainbase</name>
+	<description>The Mainbase of Project</description>
+
+	<properties>
+		<maven.compiler.source>11</maven.compiler.source>
+		<maven.compiler.target>11</maven.compiler.target>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.docx4j</groupId>
+			<artifactId>docx4j-JAXB-MOXy</artifactId>
+			<version>11.4.9</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>2.0.9</version>
+		</dependency>
+	</dependencies>
 </project>
