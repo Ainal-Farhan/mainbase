@@ -4,5 +4,5 @@ import mainbase.functional.parameter.TemplateContentControlMethodParameter;
 
 @FunctionalInterface
 public interface TemplateContentControlMethod {
-	Object process(TemplateContentControlMethodParameter parameter);
+    void process(final TemplateContentControlMethodParameter parameter);
 }

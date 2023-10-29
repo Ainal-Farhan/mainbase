@@ -1,99 +1,116 @@
 package mainbase.template;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class TemplateContentControlTable implements Serializable{
+import org.apache.commons.lang3.StringUtils;
 
-	private static final long serialVersionUID = 1L;
+import mainbase.exception.TemplateContentControlException;
 
-	private List<Map<String, String>> rows;
+public class TemplateContentControlTable implements Serializable {
 
-	private boolean flagExternalResource;
-	private boolean flagHasHeader;
-	private boolean flagCopyManyRows;
+    private static final long serialVersionUID = 1L;
 
-	private String externalPath;
-	private String externalTableTag;
+    private List<Map<String, String>> rows;
 
-	private String tableTag;
-	private Integer numHeaderRows;
-	private Integer numCopiedRows;
+    private boolean flagExternalResource;
+    private boolean flagHasHeader;
+    private boolean flagCopyManyRows;
 
-	public boolean isFlagCopyManyRows() {
-		return flagCopyManyRows;
-	}
+    private String externalPath;
+    private String externalTableTag;
 
-	public void setFlagCopyManyRows(boolean flagCopyManyRows) {
-		this.flagCopyManyRows = flagCopyManyRows;
-	}
+    private String tableTag;
+    private Integer numHeaderRows;
+    private Integer numCopiedRows;
 
-	public Integer getNumCopiedRows() {
-		return numCopiedRows;
-	}
+    public TemplateContentControlTable(String tableTag) {
+        if (StringUtils.isBlank(tableTag)) {
+            throw new TemplateContentControlException("No Table Tag Found");
+        }
 
-	public void setNumCopiedRows(Integer numCopiedRows) {
-		this.numCopiedRows = numCopiedRows;
-	}
+        this.tableTag = tableTag;
+        flagExternalResource = false;
+        flagHasHeader = false;
+        flagCopyManyRows = false;
+        rows = new ArrayList<Map<String, String>>();
+    }
 
-	public List<Map<String, String>> getRows() {
-		return rows;
-	}
+    public boolean isFlagCopyManyRows() {
+        return flagCopyManyRows;
+    }
 
-	public void setRows(List<Map<String, String>> rows) {
-		this.rows = rows;
-	}
+    public void setFlagCopyManyRows(boolean flagCopyManyRows) {
+        this.flagCopyManyRows = flagCopyManyRows;
+    }
 
-	public String getExternalPath() {
-		return externalPath;
-	}
+    public Integer getNumCopiedRows() {
+        return numCopiedRows;
+    }
 
-	public void setExternalPath(String externalPath) {
-		this.externalPath = externalPath;
-	}
+    public void setNumCopiedRows(Integer numCopiedRows) {
+        this.numCopiedRows = numCopiedRows;
+    }
 
-	public String getTableTag() {
-		return tableTag;
-	}
+    public List<Map<String, String>> getRows() {
+        return rows;
+    }
 
-	public void setTableTag(String tableTag) {
-		this.tableTag = tableTag;
-	}
+    public void setRows(List<Map<String, String>> rows) {
+        this.rows = rows;
+    }
 
-	public boolean isFlagExternalResource() {
-		return flagExternalResource;
-	}
+    public String getExternalPath() {
+        return externalPath;
+    }
 
-	public void setFlagExternalResource(boolean flagExternalResource) {
-		this.flagExternalResource = flagExternalResource;
-	}
+    public void setExternalPath(String externalPath) {
+        this.externalPath = externalPath;
+    }
 
-	public boolean isFlagHasHeader() {
-		return flagHasHeader;
-	}
+    public String getTableTag() {
+        return tableTag;
+    }
 
-	public void setFlagHasHeader(boolean flagHasHeader) {
-		this.flagHasHeader = flagHasHeader;
-	}
+    public void setTableTag(String tableTag) {
+        this.tableTag = tableTag;
+    }
 
-	public boolean getFlagHasHeader() {
-		return flagHasHeader;
-	}
+    public boolean isFlagExternalResource() {
+        return flagExternalResource;
+    }
 
-	public String getExternalTableTag() {
-		return externalTableTag;
-	}
+    public void setFlagExternalResource(boolean flagExternalResource) {
+        this.flagExternalResource = flagExternalResource;
+    }
 
-	public void setExternalTableTag(String externalTableTag) {
-		this.externalTableTag = externalTableTag;
-	}
+    public boolean isFlagHasHeader() {
+        return flagHasHeader;
+    }
 
-	public Integer getNumHeaderRows() {
-		return numHeaderRows;
-	}
+    public void setFlagHasHeader(boolean flagHasHeader) {
+        this.flagHasHeader = flagHasHeader;
+    }
 
-	public void setNumHeaderRows(Integer numHeaderRows) {
-		this.numHeaderRows = numHeaderRows;
-	}
+    public boolean getFlagHasHeader() {
+        return flagHasHeader;
+    }
+
+    public String getExternalTableTag() {
+        return externalTableTag;
+    }
+
+    public void setExternalTableTag(String externalTableTag) {
+        this.externalTableTag = externalTableTag;
+    }
+
+    public Integer getNumHeaderRows() {
+        return numHeaderRows;
+    }
+
+    public void setNumHeaderRows(Integer numHeaderRows) {
+        this.numHeaderRows = numHeaderRows;
+    }
 }
