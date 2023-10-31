@@ -13,6 +13,9 @@ public class ViewObjectFactory {
     private static Map<Class<? extends IViewObject>, ViewObjectFactoryMethod<? extends IViewObject>> CREATION_METHOD_MAP;
 
     public static <T extends IViewObject> T create(Class<T> clazz, ViewObjectFactoryMethodParameter parameter) {
+        if (clazz == null) {
+            return null;
+        }
         ViewObjectFactoryMethod<? extends IViewObject> createMethod = CREATION_METHOD_MAP.get(clazz);
         if (createMethod != null) {
             var product = createMethod.create(parameter);
