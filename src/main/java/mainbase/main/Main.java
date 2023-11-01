@@ -24,7 +24,7 @@ public class Main {
             exampleDocx4j();
             break;
         case 3:
-            exampleDocx4jNo2();
+            exampleDocx4jConcurrent();
             break;
         case 4:
             exampleStaticFactory();
@@ -32,7 +32,7 @@ public class Main {
         default:
             exampleBuilder();
             exampleDocx4j();
-            exampleDocx4jNo2();
+            exampleDocx4jConcurrent();
             exampleStaticFactory();
         }
     }
@@ -99,12 +99,12 @@ public class Main {
         System.out.println("----------------------------\n");
     }
 
-    private static void exampleDocx4jNo2() {
+    private static void exampleDocx4jConcurrent() {
         System.out.println("Start Example Docx Template No 2 (Multiple Template Concurrently):");
 
         TemplateUtil.processMultipleTemplateConcurrently(Arrays.asList(TemplateConstant.TEMPLATE_EXAMPLE_1,
                 "Test-Template3.docx", "Test-Template4.docx", "Test-Template5.docx", "Test-Template6.docx",
-                "Test-Template7.docx", "Test-Template8.docx", "Test-Template9.docx"));
+                "Test-Template7.docx", "Test-Template8.docx", "Test-Template9.docx"), 4);
 
         System.out.println("----------------------------\n");
     }

@@ -9,7 +9,7 @@ public class ViewObjectFactoryMethodParameter {
     private String description;
     private String whatToDo;
 
-    protected ViewObjectFactoryMethodParameter(ExampleDomain exampleDomain, Example2Domain example2Domain) {
+    private ViewObjectFactoryMethodParameter(ExampleDomain exampleDomain, Example2Domain example2Domain) {
         if (exampleDomain != null) {
             title = exampleDomain.getTitle();
             description = exampleDomain.getDescription();

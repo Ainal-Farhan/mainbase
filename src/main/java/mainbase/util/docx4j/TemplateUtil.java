@@ -9,6 +9,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.docx4j.model.structure.SectionWrapper;
@@ -35,33 +38,29 @@ import mainbase.util.path.ProjectPathUtil;
 public class TemplateUtil {
     protected static Logger log = LoggerFactory.getLogger(TemplateContentControlUtil.class);
 
-    public static void processMultipleTemplateConcurrently(List<String> templateNameList) {
-        if (templateNameList == null || templateNameList.isEmpty()) {
+    public static void processMultipleTemplateConcurrently(List<String> templateNameList, int numThreads) {
+        if (templateNameList == null || templateNameList.isEmpty() || numThreads <= 0) {
             return;
         }
 
-        int numThreads = 4;
-        List<Thread> threads = new ArrayList<>();
-        int sublistSize = templateNameList.size() / numThreads;
+        ExecutorService executor = Executors.newFixedThreadPool(numThreads);
 
-        for (int i = 0; i < numThreads; i++) {
-            int startIndex = i * sublistSize;
-            int endIndex = (i == numThreads - 1) ? templateNameList.size() : (startIndex + sublistSize);
-
-            List<String> sublist = templateNameList.subList(startIndex, endIndex);
-
-            Thread thread = new Thread(
-                    () -> sublist.parallelStream().forEach(templateName -> processTemplate(templateName)));
-            threads.add(thread);
-            thread.start();
+        for (String templateName : templateNameList) {
+            executor.submit(() -> {
+                try {
+                    log.info("Start processing template: " + templateName);
+                    processTemplate(templateName);
+                } catch (Exception e) {
+                    log.error("Error processing template: " + templateName, e);
+                }
+            });
         }
 
-        for (Thread thread : threads) {
-            try {
-                thread.join();
-            } catch (InterruptedException e) {
-                log.error(e.getMessage());
-            }
+        executor.shutdown();
+        try {
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        } catch (InterruptedException e) {
+            log.error("Thread execution was interrupted.", e);
         }
     }
 
