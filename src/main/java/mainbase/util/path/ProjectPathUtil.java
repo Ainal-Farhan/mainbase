@@ -4,6 +4,7 @@ import java.io.File;
 
 public class ProjectPathUtil {
     public static final String PROJECT_ROOT_DIR;
+    public static final String PROJECT_CONFIG_DIR;
     public static final String PROJECT_OUTPUT_DIR;
     public static final String TEMPLATE_DIR;
     public static final String RESOURCE_DIR;
@@ -17,6 +18,11 @@ public class ProjectPathUtil {
         File templateDirectory = new File(PROJECT_ROOT_DIR + "/src/main/resources/templates");
         TEMPLATE_DIR = templateDirectory.exists() && templateDirectory.isDirectory()
                 ? templateDirectory.getAbsolutePath()
+                : "";
+
+        File configDirectory = new File(PROJECT_ROOT_DIR + "/src/main/resources/config");
+        PROJECT_CONFIG_DIR = configDirectory.exists() && configDirectory.isDirectory()
+                ? configDirectory.getAbsolutePath()
                 : "";
 
         File resourceDirectory = new File(PROJECT_ROOT_DIR + "/src/main/resources/images");

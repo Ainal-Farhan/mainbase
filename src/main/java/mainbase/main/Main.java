@@ -3,6 +3,7 @@ package mainbase.main;
 import java.util.Arrays;
 
 import mainbase.builder.viewobject.ExampleVOBuilder;
+import mainbase.config.TemplateConfig;
 import mainbase.constant.TemplateConstant;
 import mainbase.domain.Example2Domain;
 import mainbase.domain.ExampleDomain;
@@ -14,7 +15,7 @@ import mainbase.viewobject.ExampleVO;
 public class Main {
 
     public static void main(String[] args) {
-        int example = 4;
+        int example = 2;
 
         switch (example) {
         case 1:
@@ -94,7 +95,7 @@ public class Main {
     private static void exampleDocx4j() {
         System.out.println("Start Example Docx Template:");
 
-        TemplateUtil.processTemplate(TemplateConstant.TEMPLATE_EXAMPLE_TABLE_CC);
+        TemplateUtil.processTemplate(TemplateConstant.KEY_TEMPLATE_EXAMPLE_TABLE_CC);
 
         System.out.println("----------------------------\n");
     }
@@ -102,7 +103,7 @@ public class Main {
     private static void exampleDocx4jConcurrent() {
         System.out.println("Start Example Docx Template No 2 (Multiple Template Concurrently):");
 
-        TemplateUtil.processMultipleTemplateConcurrently(Arrays.asList(TemplateConstant.TEMPLATE_EXAMPLE_1,
+        TemplateUtil.processMultipleTemplateConcurrently(Arrays.asList(TemplateConstant.KEY_TEMPLATE_EXAMPLE_1,
                 "Test-Template3.docx", "Test-Template4.docx", "Test-Template5.docx", "Test-Template6.docx",
                 "Test-Template7.docx", "Test-Template8.docx", "Test-Template9.docx"), 4);
 

@@ -12,8 +12,8 @@ public class TemplateConstant {
     public static final Map<String, TemplateProcessMethod> TEMPLATE_PROCESS_METHOD_MAP;
     public static final Map<String, TemplateContentControlMethod> WORD_CONTENT_CONTROL_METHOD;
 
-    public static final String TEMPLATE_EXAMPLE_1 = "Test-Template.docx";
-    public static final String TEMPLATE_EXAMPLE_TABLE_CC = "Test-Template2.docx";
+    public static final String KEY_TEMPLATE_EXAMPLE_1 = "Test-Template.docx";
+    public static final String KEY_TEMPLATE_EXAMPLE_TABLE_CC = "Test-Template2.docx";
 
     public static final String TAG_CC_EXAMPLE_TABLE_1 = "testTableWithHeader";
     public static final String TAG_CC_EXAMPLE_TABLE_2 = "testTableWithoutHeader";
@@ -25,9 +25,11 @@ public class TemplateConstant {
     public static final String EVEN_HEADER_FOOTER_TYPE = "EVEN";
     public static final String FIRST_HEADER_FOOTER_TYPE = "ODD";
 
+    public static final String CREATE_TEMPLATE_ACTION = "CREATE";
+
     static {
         Map<String, TemplateProcessMethod> templateProcessMethodMap = new HashMap<>();
-        templateProcessMethodMap.put(TEMPLATE_EXAMPLE_1, TemplateContentControlMethodUtil::processExample1);
+        templateProcessMethodMap.put(KEY_TEMPLATE_EXAMPLE_1, TemplateContentControlMethodUtil::processExample1);
         TEMPLATE_PROCESS_METHOD_MAP = Collections.unmodifiableMap(templateProcessMethodMap);
 
         Map<String, TemplateContentControlMethod> wordContentControlMethod = new HashMap<>();

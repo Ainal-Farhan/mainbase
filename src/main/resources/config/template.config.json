@@ -1,0 +1,76 @@
+{
+	"templates": [
+		{
+			"filename": "Test-Template.docx",
+			"key": "Test-Template.docx",
+			"actions": [
+				{
+					"type": "CREATE",
+					"excluded_content_control_list": []
+				}
+			]
+		},
+		{
+			"filename": "Test-Template2.docx",
+			"key": "Test-Template2.docx",
+			"actions": [
+				{
+					"type": "CREATE",
+					"excluded_content_control_list": [
+						"testImage"
+					]
+				}
+			]
+		},
+		{
+			"filename": "Test-Template3.docx",
+			"key": "Test-Template3.docx",
+			"actions": [
+				{
+					"type": "CREATE",
+					"excluded_content_control_list": []
+				}
+			]
+		},
+		{
+			"filename": "Test-Template4.docx",
+			"key": "Test-Template4.docx",
+			"actions": [
+				{
+					"type": "CREATE",
+					"excluded_content_control_list": []
+				}
+			]
+		},
+		{
+			"filename": "Test-Template5.docx",
+			"key": "Test-Template5.docx",
+			"actions": [
+				{
+					"type": "CREATE",
+					"excluded_content_control_list": []
+				}
+			]
+		},
+		{
+			"filename": "Test-Template6.docx",
+			"key": "Test-Template6.docx",
+			"actions": [
+				{
+					"type": "CREATE",
+					"excluded_content_control_list": []
+				}
+			]
+		},
+		{
+			"filename": "Test-Template7.docx",
+			"key": "Test-Template7.docx",
+			"actions": [
+				{
+					"type": "CREATE",
+					"excluded_content_control_list": []
+				}
+			]
+		}
+	]
+}

@@ -1,23 +1,18 @@
 package mainbase.template;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.docx4j.TraversalUtil;
 import org.docx4j.model.structure.SectionWrapper;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.FooterPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.HeaderPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 import org.docx4j.wml.ContentAccessor;
-import org.docx4j.wml.SdtElement;
-import org.docx4j.wml.SdtPr;
-import org.docx4j.wml.Tag;
 
 import mainbase.enums.TemplateContentControlLocationEnum;
 import mainbase.util.docx4j.TemplateUtil;
@@ -49,32 +44,6 @@ public class TemplateWord implements Serializable {
                 tags.addAll(TemplateUtil.retrieveAllTbls(contentAccessorsListMap.get(location)).keySet());
                 allTagSet.put(location, tags);
             }
-        }
-    }
-
-    public class SdtElementFinder extends TraversalUtil.CallbackImpl {
-        private Map<String, List<SdtElement>> sdtElementsByTag = new HashMap<>();
-
-        @Override
-        public List<Object> apply(Object o) {
-            if (o instanceof SdtElement) {
-                SdtElement sdtElement = (SdtElement) o;
-
-                // Check for the presence of a tag and categorize by tag value
-                SdtPr sdtPr = sdtElement.getSdtPr();
-                if (sdtPr != null) {
-                    Tag tag = sdtPr.getTag();
-                    if (tag != null && tag.getVal() != null) {
-                        String tagValue = tag.getVal();
-                        sdtElementsByTag.computeIfAbsent(tagValue, k -> new ArrayList<>()).add(sdtElement);
-                    }
-                }
-            }
-            return null;
-        }
-
-        public Map<String, List<SdtElement>> getSdtElementsByTag() {
-            return sdtElementsByTag;
         }
     }
 

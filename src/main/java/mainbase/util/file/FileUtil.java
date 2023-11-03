@@ -4,7 +4,17 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+
+import mainbase.functional.JsonFileProcessMethod;
+
 public class FileUtil {
+    protected static Logger log = LoggerFactory.getLogger(FileUtil.class);
 
     public static byte[] fileToByteArray(File file) throws IOException {
         long fileSize = file.length();
@@ -32,6 +42,25 @@ public class FileUtil {
         }
 
         return byteArray;
+    }
+
+    public static void processJsonFile(String path, String filename, JsonFileProcessMethod method, Object... params)
+            throws IOException, IllegalArgumentException {
+        if (StringUtils.isBlank(path) || StringUtils.isBlank(filename) || method == null) {
+            throw new IllegalArgumentException("Invalid input parameters");
+        }
+
+        File jsonFile = new File(path, filename);
+
+        if (!jsonFile.exists() || jsonFile.isDirectory()) {
+            throw new IllegalArgumentException("File does not exist or is a directory");
+        }
+
+        try (JsonParser jsonParser = new JsonFactory().createParser(jsonFile)) {
+            method.process(jsonParser, params);
+        } catch (IOException ex) {
+            throw new IOException("Error processing JSON file", ex);
+        }
     }
 
 }

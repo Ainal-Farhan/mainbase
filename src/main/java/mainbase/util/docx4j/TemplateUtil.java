@@ -27,6 +27,7 @@ import org.docx4j.wml.SdtPr;
 import org.docx4j.wml.Tbl;
 
 import jakarta.xml.bind.JAXBElement;
+import mainbase.config.TemplateConfig;
 import mainbase.constant.TemplateConstant;
 import mainbase.enums.TemplateContentControlLocationEnum;
 import mainbase.functional.TemplateProcessMethod;
@@ -38,20 +39,20 @@ import mainbase.util.path.ProjectPathUtil;
 public class TemplateUtil {
     protected static Logger log = LoggerFactory.getLogger(TemplateContentControlUtil.class);
 
-    public static void processMultipleTemplateConcurrently(List<String> templateNameList, int numThreads) {
-        if (templateNameList == null || templateNameList.isEmpty() || numThreads <= 0) {
+    public static void processMultipleTemplateConcurrently(List<String> templateKeyList, int numThreads) {
+        if (templateKeyList == null || templateKeyList.isEmpty() || numThreads <= 0) {
             return;
         }
 
         ExecutorService executor = Executors.newFixedThreadPool(numThreads);
 
-        for (String templateName : templateNameList) {
+        for (String templateKey : templateKeyList) {
             executor.submit(() -> {
                 try {
-                    log.info("Start processing template: " + templateName);
-                    processTemplate(templateName);
+                    log.info("Start processing template: " + templateKey);
+                    processTemplate(templateKey);
                 } catch (Exception e) {
-                    log.error("Error processing template: " + templateName, e);
+                    log.error("Error processing template: " + templateKey, e);
                 }
             });
         }
@@ -64,16 +65,22 @@ public class TemplateUtil {
         }
     }
 
-    public static void processTemplate(String templateName) {
-        if (StringUtils.isBlank(templateName)) {
+    public static void processTemplate(String keyTemplate) {
+        if (StringUtils.isBlank(keyTemplate)) {
             return;
         }
 
-        processTemplate(templateName, TemplateConstant.TEMPLATE_PROCESS_METHOD_MAP.get(templateName));
+        processTemplate(keyTemplate, TemplateConstant.TEMPLATE_PROCESS_METHOD_MAP.get(keyTemplate));
     }
 
-    public static void processTemplate(String templateName, TemplateProcessMethod docx4jProcessMethod) {
-        TemplateWord templateWord = new TemplateWord(templateName);
+    public static void processTemplate(String keyTemplate, TemplateProcessMethod docx4jProcessMethod) {
+        String filename = TemplateConfig.getInstance().getFileNameMap().get(keyTemplate);
+
+        if (StringUtils.isBlank(filename)) {
+            return;
+        }
+
+        TemplateWord templateWord = new TemplateWord(filename);
 
         if (templateWord.getWordprocessingMLPackage() == null) {
             return;
@@ -81,29 +88,38 @@ public class TemplateUtil {
 
         Map<String, TemplateContentControl> contentControlMap = new HashMap<>();
 
+        List<String> excludedContentControlDuringCreate = TemplateConfig.getInstance()
+                .getExcludedContentControlListMap().get(keyTemplate) != null
+                        ? TemplateConfig.getInstance().getExcludedContentControlListMap().get(keyTemplate).get(
+                                TemplateConstant.CREATE_TEMPLATE_ACTION)
+                        : null;
+
         templateWord.getAllTagSet().forEach((locationEnum, tagSet) -> {
             tagSet.stream().forEach(tag -> {
-                TemplateContentControl contentControl = contentControlMap.get(tag);
-                if (contentControl == null) {
-                    contentControl = new TemplateContentControl(tag);
+                if (excludedContentControlDuringCreate == null || excludedContentControlDuringCreate.isEmpty()
+                        || !excludedContentControlDuringCreate.contains(tag)) {
+                    TemplateContentControl contentControl = contentControlMap.get(tag);
+                    if (contentControl == null) {
+                        contentControl = new TemplateContentControl(tag);
+                    }
+
+                    Set<TemplateContentControlLocationEnum> locationList = new HashSet<>();
+
+                    if (contentControl.getLocationList() != null) {
+                        locationList.addAll(contentControl.getLocationList());
+                    }
+
+                    locationList.add(locationEnum);
+                    contentControl.setLocationList(new ArrayList<>(locationList));
+
+                    contentControlMap.put(tag, contentControl);
                 }
-
-                Set<TemplateContentControlLocationEnum> locationList = new HashSet<>();
-
-                if (contentControl.getLocationList() != null) {
-                    locationList.addAll(contentControl.getLocationList());
-                }
-
-                locationList.add(locationEnum);
-                contentControl.setLocationList(new ArrayList<>(locationList));
-
-                contentControlMap.put(tag, contentControl);
             });
         });
 
         if (contentControlMap.values() != null && !contentControlMap.values().isEmpty()) {
             TemplateContentControlUtil.processContentControlAndInsert(new ArrayList<>(contentControlMap.values()),
-                    templateWord, templateName);
+                    templateWord, filename);
         }
 
         templateWord.synchronizedTheContentAccessorsList();
@@ -114,8 +130,7 @@ public class TemplateUtil {
 
         if (templateWord.getWordprocessingMLPackage() != null) {
             try {
-                templateWord.getWordprocessingMLPackage()
-                        .save(new File(ProjectPathUtil.TEMPLATE_OUTPUT_DIR, templateName));
+                templateWord.getWordprocessingMLPackage().save(new File(ProjectPathUtil.TEMPLATE_OUTPUT_DIR, filename));
             } catch (Docx4JException e) {
             }
         }
