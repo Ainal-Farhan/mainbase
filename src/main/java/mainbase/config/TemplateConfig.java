@@ -34,15 +34,18 @@ public class TemplateConfig extends Config {
     private static String KEY_BOOLEAN_FLAG_INSERT_ALL = "flag_insert_all";
 
     private final Map<String, TemplateProperty> templatePropertiesMap;
+    private static Boolean firstInit = Boolean.TRUE;
 
     private class TemplateProperty {
         protected String key;
         protected String filename;
         protected final Map<String, TemplateAction> templateActionMap;
         protected Map<TemplateContentControlLocationEnum, Set<String>> allContentControlSet;
+        protected Boolean flagFindAllContentControl;
 
         protected TemplateProperty() {
             templateActionMap = Collections.synchronizedMap(new HashMap<>());
+            flagFindAllContentControl = true;
         }
 
     }
@@ -67,10 +70,11 @@ public class TemplateConfig extends Config {
     }
 
     public static TemplateConfig getInstance() {
-        if (config == null) {
-            config = new TemplateConfig();
-            synchronized (config) {
+        synchronized (firstInit) {
+            if (config == null && firstInit) {
+                config = new TemplateConfig();
                 config.init();
+                firstInit = Boolean.FALSE;
             }
         }
 
@@ -196,9 +200,9 @@ public class TemplateConfig extends Config {
         TemplateAction templateAction = templateProperty.templateActionMap.get(action);
         Set<String> includedContentControlSet = new HashSet<>();
 
-        if (templateProperty.allContentControlSet == null) {
-            templateProperty.allContentControlSet = Collections.synchronizedMap(new HashMap<>());
-            synchronized (templateProperty.allContentControlSet) {
+        synchronized (templateProperty.flagFindAllContentControl) {
+            if (templateProperty.allContentControlSet == null && templateProperty.flagFindAllContentControl) {
+                templateProperty.allContentControlSet = Collections.synchronizedMap(new HashMap<>());
 
                 if (StringUtils.isNotBlank(templateProperty.filename)) {
                     WordprocessingMLPackage wordprocessingMLPackage = TemplateUtil
@@ -221,6 +225,7 @@ public class TemplateConfig extends Config {
                         }
                     }
                 }
+                templateProperty.flagFindAllContentControl = false;
             }
         }
 

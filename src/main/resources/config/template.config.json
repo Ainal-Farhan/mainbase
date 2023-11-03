@@ -85,6 +85,30 @@
 					"included_content_control_list": []
 				}
 			]
+		},
+		{
+			"filename": "Test-Template8.docx",
+			"key": "Test-Template8.docx",
+			"actions": [
+				{
+					"type": "CREATE",
+					"flag_insert_all": true,
+					"excluded_content_control_list": [],
+					"included_content_control_list": []
+				}
+			]
+		},
+		{
+			"filename": "Test-Template9.docx",
+			"key": "Test-Template9.docx",
+			"actions": [
+				{
+					"type": "CREATE",
+					"flag_insert_all": true,
+					"excluded_content_control_list": [],
+					"included_content_control_list": []
+				}
+			]
 		}
 	]
 }
