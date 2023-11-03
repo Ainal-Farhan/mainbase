@@ -3,7 +3,6 @@ package mainbase.main;
 import java.util.Arrays;
 
 import mainbase.builder.viewobject.ExampleVOBuilder;
-import mainbase.config.TemplateConfig;
 import mainbase.constant.TemplateConstant;
 import mainbase.domain.Example2Domain;
 import mainbase.domain.ExampleDomain;
