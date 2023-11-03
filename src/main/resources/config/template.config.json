@@ -1,16 +1,47 @@
 {
+	"global_settings": {
+		"actions": [
+			{
+				"type": "CREATE",
+				"flag_insert_all": true,
+				"excluded_content_control_list": [
+					"namaSignature",
+					"maklumatPengguna"
+				],
+				"included_content_control_list": []
+			},
+			{
+				"type": "SEDIA",
+				"flag_insert_all": false,
+				"excluded_content_control_list": [
+					"namaSignature",
+					"maklumatPengguna"
+				],
+				"included_content_control_list": []
+			},
+			{
+				"type": "DISEMAK",
+				"flag_insert_all": false,
+				"excluded_content_control_list": [
+					"namaSignature",
+					"maklumatPengguna"
+				],
+				"included_content_control_list": []
+			},
+			{
+				"type": "PERAKU",
+				"flag_insert_all": false,
+				"excluded_content_control_list": [],
+				"included_content_control_list": [
+					"tarikhSemasa"
+				]
+			}
+		]
+	},
 	"templates": [
 		{
 			"filename": "Test-Template.docx",
-			"key": "Test-Template.docx",
-			"actions": [
-				{
-					"type": "CREATE",
-					"flag_insert_all": true,
-					"excluded_content_control_list": [],
-					"included_content_control_list": []
-				}
-			]
+			"key": "Test-Template.docx"
 		},
 		{
 			"filename": "Test-Template2.docx",
@@ -28,87 +59,31 @@
 		},
 		{
 			"filename": "Test-Template3.docx",
-			"key": "Test-Template3.docx",
-			"actions": [
-				{
-					"type": "CREATE",
-					"flag_insert_all": true,
-					"excluded_content_control_list": [],
-					"included_content_control_list": []
-				}
-			]
+			"key": "Test-Template3.docx"
 		},
 		{
 			"filename": "Test-Template4.docx",
-			"key": "Test-Template4.docx",
-			"actions": [
-				{
-					"type": "CREATE",
-					"flag_insert_all": true,
-					"excluded_content_control_list": [],
-					"included_content_control_list": []
-				}
-			]
+			"key": "Test-Template4.docx"
 		},
 		{
 			"filename": "Test-Template5.docx",
-			"key": "Test-Template5.docx",
-			"actions": [
-				{
-					"type": "CREATE",
-					"flag_insert_all": true,
-					"excluded_content_control_list": [],
-					"included_content_control_list": []
-				}
-			]
+			"key": "Test-Template5.docx"
 		},
 		{
 			"filename": "Test-Template6.docx",
-			"key": "Test-Template6.docx",
-			"actions": [
-				{
-					"type": "CREATE",
-					"flag_insert_all": true,
-					"excluded_content_control_list": [],
-					"included_content_control_list": []
-				}
-			]
+			"key": "Test-Template6.docx"
 		},
 		{
 			"filename": "Test-Template7.docx",
-			"key": "Test-Template7.docx",
-			"actions": [
-				{
-					"type": "CREATE",
-					"flag_insert_all": true,
-					"excluded_content_control_list": [],
-					"included_content_control_list": []
-				}
-			]
+			"key": "Test-Template7.docx"
 		},
 		{
 			"filename": "Test-Template8.docx",
-			"key": "Test-Template8.docx",
-			"actions": [
-				{
-					"type": "CREATE",
-					"flag_insert_all": true,
-					"excluded_content_control_list": [],
-					"included_content_control_list": []
-				}
-			]
+			"key": "Test-Template8.docx"
 		},
 		{
 			"filename": "Test-Template9.docx",
-			"key": "Test-Template9.docx",
-			"actions": [
-				{
-					"type": "CREATE",
-					"flag_insert_all": true,
-					"excluded_content_control_list": [],
-					"included_content_control_list": []
-				}
-			]
+			"key": "Test-Template9.docx"
 		}
 	]
 }

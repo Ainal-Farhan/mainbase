@@ -23,6 +23,7 @@ public class TemplateConfig extends Config {
     private static TemplateConfig config;
     private static String CONFIG_FILE_NAME = "template.config.json";
     private static String KEY_OBJECTARRAY_TEMPLATES = "templates";
+    private static String KEY_OBJECTARRAY_GLOBAL_SETTINGS = "global_settings";
 
     private static String KEY_STRING_FILENAME = "filename";
     private static String KEY_STRING_KEY = "key";
@@ -34,6 +35,7 @@ public class TemplateConfig extends Config {
     private static String KEY_BOOLEAN_FLAG_INSERT_ALL = "flag_insert_all";
 
     private final Map<String, TemplateProperty> templatePropertiesMap;
+    private final Map<String, TemplateAction> templateGlobalSettingsActionMap;
     private static Boolean firstInit = Boolean.TRUE;
 
     private class TemplateProperty {
@@ -67,6 +69,7 @@ public class TemplateConfig extends Config {
         super();
 
         templatePropertiesMap = Collections.synchronizedMap(new HashMap<>());
+        templateGlobalSettingsActionMap = Collections.synchronizedMap(new HashMap<>());
     }
 
     public static TemplateConfig getInstance() {
@@ -89,50 +92,72 @@ public class TemplateConfig extends Config {
         try {
             FileUtil.processJsonFile(ProjectPathUtil.PROJECT_CONFIG_DIR, CONFIG_FILE_NAME, (jsonParser, params) -> {
                 while (jsonParser.nextToken() != null) {
-                    if (jsonParser.currentToken() != JsonToken.FIELD_NAME
-                            || !KEY_OBJECTARRAY_TEMPLATES.equals(jsonParser.getText())) {
+                    if (jsonParser.currentToken() != JsonToken.FIELD_NAME) {
                         continue;
                     }
 
+                    String fieldName = jsonParser.getText();
                     jsonParser.nextToken();
-                    if (jsonParser.currentToken() == JsonToken.START_ARRAY) {
-                        while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
+                    if (KEY_OBJECTARRAY_TEMPLATES.equals(fieldName)) {
+                        if (jsonParser.currentToken() == JsonToken.START_ARRAY) {
+                            while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
 
-                            if (jsonParser.currentToken() == JsonToken.START_OBJECT) {
-                                TemplateProperty templateProperty = new TemplateProperty();
+                                if (jsonParser.currentToken() == JsonToken.START_OBJECT) {
+                                    TemplateProperty templateProperty = new TemplateProperty();
 
-                                while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
-                                    if (jsonParser.currentToken() == JsonToken.FIELD_NAME) {
-                                        String fieldName = jsonParser.getText();
-                                        jsonParser.nextToken();
+                                    while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
+                                        if (jsonParser.currentToken() == JsonToken.FIELD_NAME) {
+                                            fieldName = jsonParser.getText();
+                                            jsonParser.nextToken();
 
-                                        if (KEY_STRING_KEY.equals(fieldName)) {
-                                            templateProperty.key = jsonParser.getValueAsString();
-                                            continue;
-                                        }
-                                        if (KEY_STRING_FILENAME.equals(fieldName)) {
-                                            templateProperty.filename = jsonParser.getValueAsString();
-                                            continue;
-                                        }
-
-                                        if (KEY_OBJECTARRAY_ACTIONS.equals(fieldName)
-                                                && jsonParser.currentToken() == JsonToken.START_ARRAY) {
-                                            while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
-                                                if (jsonParser.currentToken() == JsonToken.START_OBJECT) {
-                                                    TemplateAction templateAction = processTemplateAction(jsonParser);
-                                                    if (templateAction.type != null) {
-                                                        templateProperty.templateActionMap.put(templateAction.type,
-                                                                templateAction);
+                                            if (KEY_STRING_KEY.equals(fieldName)) {
+                                                templateProperty.key = jsonParser.getValueAsString();
+                                            } else if (KEY_STRING_FILENAME.equals(fieldName)) {
+                                                templateProperty.filename = jsonParser.getValueAsString();
+                                            } else if (KEY_OBJECTARRAY_ACTIONS.equals(fieldName)
+                                                    && jsonParser.currentToken() == JsonToken.START_ARRAY) {
+                                                while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
+                                                    if (jsonParser.currentToken() == JsonToken.START_OBJECT) {
+                                                        TemplateAction templateAction = processTemplateAction(
+                                                                jsonParser);
+                                                        if (templateAction.type != null) {
+                                                            templateProperty.templateActionMap.put(templateAction.type,
+                                                                    templateAction);
+                                                        }
                                                     }
                                                 }
                                             }
+
                                         }
 
+                                        if (templateProperty.key != null) {
+                                            ((Map<String, TemplateProperty>) params[0]).put(templateProperty.key,
+                                                    templateProperty);
+                                        }
                                     }
+                                }
+                            }
+                        }
+                        continue;
+                    }
 
-                                    if (templateProperty.key != null) {
-                                        ((Map<String, TemplateProperty>) params[0]).put(templateProperty.key,
-                                                templateProperty);
+                    if (KEY_OBJECTARRAY_GLOBAL_SETTINGS.equals(fieldName)) {
+                        if (jsonParser.currentToken() == JsonToken.START_OBJECT) {
+                            while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
+                                if (jsonParser.currentToken() == JsonToken.FIELD_NAME) {
+                                    fieldName = jsonParser.getText();
+                                    jsonParser.nextToken();
+                                    if (KEY_OBJECTARRAY_ACTIONS.equals(fieldName)
+                                            && jsonParser.currentToken() == JsonToken.START_ARRAY) {
+                                        while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
+                                            if (jsonParser.currentToken() == JsonToken.START_OBJECT) {
+                                                TemplateAction templateAction = processTemplateAction(jsonParser);
+                                                if (templateAction.type != null) {
+                                                    templateGlobalSettingsActionMap.put(templateAction.type,
+                                                            templateAction);
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -193,11 +218,20 @@ public class TemplateConfig extends Config {
             String action) {
         TemplateProperty templateProperty = templatePropertiesMap.get(templateKey);
 
-        if (templateProperty == null || templateProperty.templateActionMap.get(action) == null) {
+        if (templateProperty == null) {
             return Collections.emptySet();
         }
 
         TemplateAction templateAction = templateProperty.templateActionMap.get(action);
+
+        if (templateAction == null) {
+            templateAction = templateGlobalSettingsActionMap.get(action);
+        }
+
+        if (templateAction == null) {
+            return Collections.emptySet();
+        }
+
         Set<String> includedContentControlSet = new HashSet<>();
 
         synchronized (templateProperty.flagFindAllContentControl) {
@@ -242,7 +276,17 @@ public class TemplateConfig extends Config {
     public Set<String> retrieveExcludedContentControlTag(String templateKey, String action) {
         TemplateProperty templateProperty = templatePropertiesMap.get(templateKey);
 
-        if (templateProperty == null || templateProperty.templateActionMap.get(action) == null) {
+        if (templateProperty == null) {
+            return Collections.emptySet();
+        }
+
+        TemplateAction templateAction = templateProperty.templateActionMap.get(action);
+
+        if (templateAction == null) {
+            templateAction = templateGlobalSettingsActionMap.get(action);
+        }
+
+        if (templateAction == null) {
             return Collections.emptySet();
         }
 

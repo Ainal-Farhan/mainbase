@@ -14,7 +14,7 @@ import mainbase.viewobject.ExampleVO;
 public class Main {
 
     public static void main(String[] args) {
-        int example = 2;
+        int example = 3;
 
         switch (example) {
         case 1:
