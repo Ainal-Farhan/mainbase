@@ -77,63 +77,48 @@ public class TemplateConfig extends Config {
         return config;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void init() {
         templatePropertiesMap.clear();
 
         try {
-            FileUtil.processJsonFile(ProjectPathUtil.PROJECT_CONFIG_DIR, CONFIG_FILE_NAME, (jsonParser, objects) -> {
+            FileUtil.processJsonFile(ProjectPathUtil.PROJECT_CONFIG_DIR, CONFIG_FILE_NAME, (jsonParser, params) -> {
                 while (jsonParser.nextToken() != null) {
-                    if (jsonParser.currentToken() == JsonToken.FIELD_NAME
-                            && KEY_OBJECTARRAY_TEMPLATES.equals(jsonParser.getText())) {
-                        jsonParser.nextToken();
-                        if (jsonParser.currentToken() == JsonToken.START_ARRAY) {
-                            while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
+                    if (jsonParser.currentToken() != JsonToken.FIELD_NAME
+                            || !KEY_OBJECTARRAY_TEMPLATES.equals(jsonParser.getText())) {
+                        continue;
+                    }
 
-                                if (jsonParser.currentToken() == JsonToken.START_OBJECT) {
-                                    TemplateProperty templateProperty = new TemplateProperty();
+                    jsonParser.nextToken();
+                    if (jsonParser.currentToken() == JsonToken.START_ARRAY) {
+                        while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
 
-                                    while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
-                                        if (jsonParser.currentToken() == JsonToken.FIELD_NAME) {
-                                            String fieldName = jsonParser.getText();
-                                            jsonParser.nextToken();
+                            if (jsonParser.currentToken() == JsonToken.START_OBJECT) {
+                                TemplateProperty templateProperty = new TemplateProperty();
 
-                                            if (KEY_STRING_KEY.equals(fieldName)) {
-                                                templateProperty.key = jsonParser.getValueAsString();
-                                            } else if (KEY_STRING_FILENAME.equals(fieldName)) {
-                                                templateProperty.filename = jsonParser.getValueAsString();
-                                            } else if (KEY_OBJECTARRAY_ACTIONS.equals(fieldName)) {
-                                                if (jsonParser.currentToken() == JsonToken.START_ARRAY) {
-                                                    while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
-                                                        if (jsonParser.currentToken() == JsonToken.START_OBJECT) {
-                                                            TemplateAction templateAction = new TemplateAction();
-                                                            while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
-                                                                if (jsonParser.currentToken() == JsonToken.FIELD_NAME) {
-                                                                    fieldName = jsonParser.getText();
-                                                                    jsonParser.nextToken();
-                                                                    if (KEY_STRING_TYPE.equals(fieldName)) {
-                                                                        templateAction.type = jsonParser
-                                                                                .getValueAsString();
-                                                                    } else if (KEY_STRINGARRAY_EXCLUDED_CONTENT_CONTROL_LIST
-                                                                            .equals(fieldName)) {
-                                                                        processStringArray(jsonParser,
-                                                                                templateAction.excludedContentControlSet);
-                                                                    } else if (KEY_STRINGARRAY_INCLUDED_CONTENT_CONTROL_LIST
-                                                                            .equals(fieldName)) {
-                                                                        processStringArray(jsonParser,
-                                                                                templateAction.includedContentControlSet);
-                                                                    } else if (KEY_BOOLEAN_FLAG_INSERT_ALL
-                                                                            .equals(fieldName)) {
-                                                                        templateAction.flagInsertAll = jsonParser
-                                                                                .getValueAsBoolean();
-                                                                    }
-                                                                }
-                                                            }
-                                                            if (templateAction.type != null) {
-                                                                templateProperty.templateActionMap
-                                                                        .put(templateAction.type, templateAction);
-                                                            }
-                                                        }
+                                while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
+                                    if (jsonParser.currentToken() == JsonToken.FIELD_NAME) {
+                                        String fieldName = jsonParser.getText();
+                                        jsonParser.nextToken();
+
+                                        if (KEY_STRING_KEY.equals(fieldName)) {
+                                            templateProperty.key = jsonParser.getValueAsString();
+                                            continue;
+                                        }
+                                        if (KEY_STRING_FILENAME.equals(fieldName)) {
+                                            templateProperty.filename = jsonParser.getValueAsString();
+                                            continue;
+                                        }
+
+                                        if (KEY_OBJECTARRAY_ACTIONS.equals(fieldName)
+                                                && jsonParser.currentToken() == JsonToken.START_ARRAY) {
+                                            while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
+                                                if (jsonParser.currentToken() == JsonToken.START_OBJECT) {
+                                                    TemplateAction templateAction = processTemplateAction(jsonParser);
+                                                    if (templateAction.type != null) {
+                                                        templateProperty.templateActionMap.put(templateAction.type,
+                                                                templateAction);
                                                     }
                                                 }
                                             }
@@ -142,17 +127,45 @@ public class TemplateConfig extends Config {
                                     }
 
                                     if (templateProperty.key != null) {
-                                        templatePropertiesMap.put(templateProperty.key, templateProperty);
+                                        ((Map<String, TemplateProperty>) params[0]).put(templateProperty.key,
+                                                templateProperty);
                                     }
                                 }
                             }
                         }
                     }
                 }
-            });
+            }, templatePropertiesMap);
         } catch (IllegalArgumentException | IOException e) {
             log.error(e.getMessage(), e);
         }
+    }
+
+    private TemplateAction processTemplateAction(JsonParser jsonParser) throws IOException {
+        TemplateAction templateAction = new TemplateAction();
+        while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
+            if (jsonParser.currentToken() == JsonToken.FIELD_NAME) {
+                String fieldName = jsonParser.getText();
+                jsonParser.nextToken();
+                if (KEY_STRING_TYPE.equals(fieldName)) {
+                    templateAction.type = jsonParser.getValueAsString();
+                    continue;
+                }
+                if (KEY_STRINGARRAY_EXCLUDED_CONTENT_CONTROL_LIST.equals(fieldName)) {
+                    processStringArray(jsonParser, templateAction.excludedContentControlSet);
+                    continue;
+                }
+                if (KEY_STRINGARRAY_INCLUDED_CONTENT_CONTROL_LIST.equals(fieldName)) {
+                    processStringArray(jsonParser, templateAction.includedContentControlSet);
+                    continue;
+                }
+                if (KEY_BOOLEAN_FLAG_INSERT_ALL.equals(fieldName)) {
+                    templateAction.flagInsertAll = jsonParser.getValueAsBoolean();
+                }
+            }
+        }
+
+        return templateAction;
     }
 
     private void processStringArray(JsonParser jsonParser, Set<String> stringSet) throws IOException {
