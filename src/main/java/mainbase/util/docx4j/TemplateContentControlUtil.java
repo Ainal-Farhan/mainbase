@@ -8,6 +8,7 @@ import org.docx4j.wml.JcEnumeration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import mainbase.config.TemplateConfig;
 import mainbase.constant.TemplateConstant;
 import mainbase.functional.TemplateContentControlMethod;
 import mainbase.functional.parameter.TemplateContentControlMethodParameter;
@@ -55,11 +56,11 @@ public class TemplateContentControlUtil {
     }
 
     public static void processContentControlAndInsert(List<TemplateContentControl> contentControlList,
-            TemplateWord templateWord, String templateName) {
+            TemplateWord templateWord, String templateName, String action) {
         contentControlList = filterPelupusanWordContentControlVOList(contentControlList);
 
         if (contentControlList == null || contentControlList.isEmpty()
-                || templateWord.getWordprocessingMLPackage() == null) {
+                || templateWord.getWordprocessingMLPackage() == null || StringUtils.isBlank(action)) {
             return;
         }
 
@@ -78,8 +79,11 @@ public class TemplateContentControlUtil {
                 case TEXT:
                     if (cc.getValue() != null && cc.getValue() instanceof String) {
                         cc.getLocationList().stream().forEach(loc -> {
-                            if (templateWord.getAllTagSet().get(loc) != null
-                                    && !templateWord.getAllTagSet().get(loc).isEmpty()) {
+                            if (TemplateConfig.getInstance()
+                                    .retrieveIncludedContentControlTag(templateWord.getFilename(), loc, action) != null
+                                    && !TemplateConfig.getInstance()
+                                            .retrieveIncludedContentControlTag(templateWord.getFilename(), loc, action)
+                                            .isEmpty()) {
                                 InsertContentControlUtil.insertValueForContentControlIntoTemplate(
                                         templateWord.getContentAccessorsListMap().get(loc), cc.getTag(),
                                         (String) cc.getValue());
@@ -90,8 +94,11 @@ public class TemplateContentControlUtil {
                 case IMAGE:
                     if (cc.getValue() != null && cc.getValue() instanceof byte[]) {
                         cc.getLocationList().stream().forEach(loc -> {
-                            if (templateWord.getAllTagSet().get(loc) != null
-                                    && !templateWord.getAllTagSet().get(loc).isEmpty()) {
+                            if (TemplateConfig.getInstance()
+                                    .retrieveIncludedContentControlTag(templateWord.getFilename(), loc, action) != null
+                                    && !TemplateConfig.getInstance()
+                                            .retrieveIncludedContentControlTag(templateWord.getFilename(), loc, action)
+                                            .isEmpty()) {
                                 InsertContentControlUtil.insertImageForContentControlIntoTemplate(
                                         templateWord.getWordprocessingMLPackage(),
                                         templateWord.getContentAccessorsListMap().get(loc), (byte[]) cc.getValue(),
@@ -108,8 +115,14 @@ public class TemplateContentControlUtil {
                     TemplateContentControlTable value = cc.retrieveValueAs(TemplateContentControlTable.class);
                     if (value != null) {
                         cc.getLocationList().stream().forEach(loc -> {
-                            InsertContentControlUtil.insertContentControlTableIntoTemplate(value,
-                                    templateWord.getWordprocessingMLPackage(), loc);
+                            if (TemplateConfig.getInstance()
+                                    .retrieveIncludedContentControlTag(templateWord.getFilename(), loc, action) != null
+                                    && !TemplateConfig.getInstance()
+                                            .retrieveIncludedContentControlTag(templateWord.getFilename(), loc, action)
+                                            .isEmpty()) {
+                                InsertContentControlUtil.insertContentControlTableIntoTemplate(value,
+                                        templateWord.getWordprocessingMLPackage(), loc);
+                            }
                         });
                     }
                 }

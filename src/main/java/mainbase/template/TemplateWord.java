@@ -2,10 +2,8 @@ package mainbase.template;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.docx4j.model.structure.SectionWrapper;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
@@ -26,23 +24,17 @@ public class TemplateWord implements Serializable {
 
     private String filename;
 
-    private Map<TemplateContentControlLocationEnum, Set<String>> allTagSet;
     private Map<TemplateContentControlLocationEnum, List<? extends ContentAccessor>> contentAccessorsListMap;
 
     public TemplateWord(String filename) {
         this.filename = filename;
         wordprocessingMLPackage = TemplateUtil.retrieveWordprocessingMLPackage(ProjectPathUtil.TEMPLATE_DIR, filename);
-        allTagSet = new HashMap<>();
         contentAccessorsListMap = new HashMap<>();
 
         if (wordprocessingMLPackage != null) {
             for (TemplateContentControlLocationEnum location : TemplateContentControlLocationEnum.values()) {
                 contentAccessorsListMap.put(location,
                         TemplateContentControlLocationEnum.retrieveContentAccessor(location, wordprocessingMLPackage));
-                Set<String> tags = new HashSet<>();
-                tags.addAll(TemplateUtil.retrieveAllSdtElements(contentAccessorsListMap.get(location)).keySet());
-                tags.addAll(TemplateUtil.retrieveAllTbls(contentAccessorsListMap.get(location)).keySet());
-                allTagSet.put(location, tags);
             }
         }
     }
@@ -127,14 +119,6 @@ public class TemplateWord implements Serializable {
 
     public void setFilename(String filename) {
         this.filename = filename;
-    }
-
-    public Map<TemplateContentControlLocationEnum, Set<String>> getAllTagSet() {
-        return allTagSet;
-    }
-
-    public void setAllTagSet(Map<TemplateContentControlLocationEnum, Set<String>> allTagSet) {
-        this.allTagSet = allTagSet;
     }
 
     public Map<TemplateContentControlLocationEnum, List<? extends ContentAccessor>> getContentAccessorsListMap() {

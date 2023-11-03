@@ -74,7 +74,7 @@ public class TemplateUtil {
     }
 
     public static void processTemplate(String keyTemplate, TemplateProcessMethod docx4jProcessMethod) {
-        String filename = TemplateConfig.getInstance().getFileNameMap().get(keyTemplate);
+        String filename = TemplateConfig.getInstance().retrieveFilename(keyTemplate);
 
         if (StringUtils.isBlank(filename)) {
             return;
@@ -88,38 +88,30 @@ public class TemplateUtil {
 
         Map<String, TemplateContentControl> contentControlMap = new HashMap<>();
 
-        List<String> excludedContentControlDuringCreate = TemplateConfig.getInstance()
-                .getExcludedContentControlListMap().get(keyTemplate) != null
-                        ? TemplateConfig.getInstance().getExcludedContentControlListMap().get(keyTemplate).get(
-                                TemplateConstant.CREATE_TEMPLATE_ACTION)
-                        : null;
+        templateWord.getContentAccessorsListMap().forEach((locationEnum, contentAccessor) -> {
+            TemplateConfig.getInstance().retrieveIncludedContentControlTag(keyTemplate, locationEnum,
+                    TemplateConstant.CREATE_TEMPLATE_ACTION).stream().forEach(tag -> {
+                        TemplateContentControl contentControl = contentControlMap.get(tag);
+                        if (contentControl == null) {
+                            contentControl = new TemplateContentControl(tag);
+                        }
 
-        templateWord.getAllTagSet().forEach((locationEnum, tagSet) -> {
-            tagSet.stream().forEach(tag -> {
-                if (excludedContentControlDuringCreate == null || excludedContentControlDuringCreate.isEmpty()
-                        || !excludedContentControlDuringCreate.contains(tag)) {
-                    TemplateContentControl contentControl = contentControlMap.get(tag);
-                    if (contentControl == null) {
-                        contentControl = new TemplateContentControl(tag);
-                    }
+                        Set<TemplateContentControlLocationEnum> locationList = new HashSet<>();
 
-                    Set<TemplateContentControlLocationEnum> locationList = new HashSet<>();
+                        if (contentControl.getLocationList() != null) {
+                            locationList.addAll(contentControl.getLocationList());
+                        }
 
-                    if (contentControl.getLocationList() != null) {
-                        locationList.addAll(contentControl.getLocationList());
-                    }
+                        locationList.add(locationEnum);
+                        contentControl.setLocationList(new ArrayList<>(locationList));
 
-                    locationList.add(locationEnum);
-                    contentControl.setLocationList(new ArrayList<>(locationList));
-
-                    contentControlMap.put(tag, contentControl);
-                }
-            });
+                        contentControlMap.put(tag, contentControl);
+                    });
         });
 
         if (contentControlMap.values() != null && !contentControlMap.values().isEmpty()) {
             TemplateContentControlUtil.processContentControlAndInsert(new ArrayList<>(contentControlMap.values()),
-                    templateWord, filename);
+                    templateWord, filename, TemplateConstant.CREATE_TEMPLATE_ACTION);
         }
 
         templateWord.synchronizedTheContentAccessorsList();

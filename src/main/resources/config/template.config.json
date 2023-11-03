@@ -6,7 +6,9 @@
 			"actions": [
 				{
 					"type": "CREATE",
-					"excluded_content_control_list": []
+					"flag_insert_all": true,
+					"excluded_content_control_list": [],
+					"included_content_control_list": []
 				}
 			]
 		},
@@ -16,9 +18,11 @@
 			"actions": [
 				{
 					"type": "CREATE",
+					"flag_insert_all": true,
 					"excluded_content_control_list": [
 						"testImage"
-					]
+					],
+					"included_content_control_list": []
 				}
 			]
 		},
@@ -28,7 +32,9 @@
 			"actions": [
 				{
 					"type": "CREATE",
-					"excluded_content_control_list": []
+					"flag_insert_all": true,
+					"excluded_content_control_list": [],
+					"included_content_control_list": []
 				}
 			]
 		},
@@ -38,7 +44,9 @@
 			"actions": [
 				{
 					"type": "CREATE",
-					"excluded_content_control_list": []
+					"flag_insert_all": true,
+					"excluded_content_control_list": [],
+					"included_content_control_list": []
 				}
 			]
 		},
@@ -48,7 +56,9 @@
 			"actions": [
 				{
 					"type": "CREATE",
-					"excluded_content_control_list": []
+					"flag_insert_all": true,
+					"excluded_content_control_list": [],
+					"included_content_control_list": []
 				}
 			]
 		},
@@ -58,7 +68,9 @@
 			"actions": [
 				{
 					"type": "CREATE",
-					"excluded_content_control_list": []
+					"flag_insert_all": true,
+					"excluded_content_control_list": [],
+					"included_content_control_list": []
 				}
 			]
 		},
@@ -68,7 +80,9 @@
 			"actions": [
 				{
 					"type": "CREATE",
-					"excluded_content_control_list": []
+					"flag_insert_all": true,
+					"excluded_content_control_list": [],
+					"included_content_control_list": []
 				}
 			]
 		}
