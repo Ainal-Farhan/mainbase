@@ -20,6 +20,7 @@ public class TemplateConstant {
     public static final String TAG_CC_EXAMPLE_TEXT_1 = "testText";
     public static final String TAG_CC_EXAMPLE_TEXT_2 = "testText2";
     public static final String TAG_CC_EXAMPLE_IMAGE_1 = "testImage";
+    public static final String TAG_CC_EXAMPLE_EXT_TABLE_1 = "testExternalHeader";
 
     public static final String DEFAULT_HEADER_FOOTER_TYPE = "DEFAULT";
     public static final String EVEN_HEADER_FOOTER_TYPE = "EVEN";
@@ -39,6 +40,8 @@ public class TemplateConstant {
         wordContentControlMethod.put(TAG_CC_EXAMPLE_TEXT_1, TemplateContentControlMethodUtil.processExample3CC);
         wordContentControlMethod.put(TAG_CC_EXAMPLE_IMAGE_1, TemplateContentControlMethodUtil.processExample4ImageCC);
         wordContentControlMethod.put(TAG_CC_EXAMPLE_TEXT_2, TemplateContentControlMethodUtil.processExample5CC);
+        wordContentControlMethod.put(TAG_CC_EXAMPLE_EXT_TABLE_1,
+                TemplateContentControlMethodUtil.processExample1ExternalTableCC);
 
         WORD_CONTENT_CONTROL_METHOD = Collections.unmodifiableMap(wordContentControlMethod);
     }

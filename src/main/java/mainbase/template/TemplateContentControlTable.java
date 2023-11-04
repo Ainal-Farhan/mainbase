@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
+import mainbase.enums.TemplateContentControlLocationEnum;
 import mainbase.exception.TemplateContentControlException;
 
 public class TemplateContentControlTable implements Serializable {
@@ -20,7 +21,9 @@ public class TemplateContentControlTable implements Serializable {
     private boolean flagCopyManyRows;
 
     private String externalPath;
+    private String externalFilename;
     private String externalTableTag;
+    private TemplateContentControlLocationEnum externalLocationTable;
 
     private String tableTag;
     private Integer numHeaderRows;
@@ -112,5 +115,21 @@ public class TemplateContentControlTable implements Serializable {
 
     public void setNumHeaderRows(Integer numHeaderRows) {
         this.numHeaderRows = numHeaderRows;
+    }
+
+    public String getExternalFilename() {
+        return externalFilename;
+    }
+
+    public void setExternalFilename(String externalFilename) {
+        this.externalFilename = externalFilename;
+    }
+
+    public TemplateContentControlLocationEnum getExternalLocationTable() {
+        return externalLocationTable;
+    }
+
+    public void setExternalLocationTable(TemplateContentControlLocationEnum externalLocationTable) {
+        this.externalLocationTable = externalLocationTable;
     }
 }

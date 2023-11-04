@@ -7,6 +7,7 @@ public class ProjectPathUtil {
     public static final String PROJECT_CONFIG_DIR;
     public static final String PROJECT_OUTPUT_DIR;
     public static final String TEMPLATE_DIR;
+    public static final String TEMPLATE_REF_DIR;
     public static final String RESOURCE_DIR;
     public static final String FILE_OUTPUT_DIR;
     public static final String TEMPLATE_OUTPUT_DIR;
@@ -18,6 +19,11 @@ public class ProjectPathUtil {
         File templateDirectory = new File(PROJECT_ROOT_DIR + "/src/main/resources/templates");
         TEMPLATE_DIR = templateDirectory.exists() && templateDirectory.isDirectory()
                 ? templateDirectory.getAbsolutePath()
+                : "";
+
+        File templateRefDirectory = new File(TEMPLATE_DIR + "/reference");
+        TEMPLATE_REF_DIR = templateRefDirectory.exists() && templateRefDirectory.isDirectory()
+                ? templateRefDirectory.getAbsolutePath()
                 : "";
 
         File configDirectory = new File(PROJECT_ROOT_DIR + "/src/main/resources/config");

@@ -12,6 +12,7 @@ import org.docx4j.wml.P;
 import org.docx4j.wml.R;
 import org.docx4j.wml.Text;
 
+import mainbase.enums.TemplateContentControlLocationEnum;
 import mainbase.enums.TemplateContentControlTypeEnum;
 import mainbase.functional.TemplateContentControlMethod;
 import mainbase.functional.parameter.TemplateContentControlMethodParameter;
@@ -36,6 +37,33 @@ public class TemplateContentControlMethodUtil {
 
         return wordprocessingMLPackage;
 
+    };
+
+    public static final TemplateContentControlMethod processExample1ExternalTableCC = (
+            final TemplateContentControlMethodParameter parameter) -> {
+        parameter.contentControl.setType(TemplateContentControlTypeEnum.TABLE);
+
+        TemplateContentControlTable tableCC = parameter.contentControl
+                .retrieveValueAs(TemplateContentControlTable.class);
+        if (tableCC == null) {
+            tableCC = new TemplateContentControlTable(parameter.contentControl.getTag());
+        }
+
+        tableCC.setFlagHasHeader(true);
+
+        tableCC.setFlagExternalResource(true);
+        tableCC.setExternalLocationTable(TemplateContentControlLocationEnum.BODY);
+        tableCC.setExternalPath(ProjectPathUtil.TEMPLATE_REF_DIR);
+        tableCC.setExternalFilename("ExampleReferenceTable1.docx");
+        tableCC.setExternalTableTag("externalTable1");
+
+        Map<String, String> eachRowVal = new HashMap<>();
+        eachRowVal.put("row1col1", "Test for col 1");
+        eachRowVal.put("row1col2", "Test for col 2");
+        eachRowVal.put("row1col3", "Test for col 3");
+        tableCC.getRows().add(eachRowVal);
+
+        parameter.contentControl.setValue(tableCC);
     };
 
     public static final TemplateContentControlMethod processExample1TableCC = (

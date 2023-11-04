@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.docx4j.XmlUtils;
@@ -42,6 +43,7 @@ import org.docx4j.wml.PPrBase.Spacing;
 
 import jakarta.xml.bind.JAXBElement;
 import mainbase.enums.TemplateContentControlLocationEnum;
+import mainbase.exception.TemplateContentControlException;
 import mainbase.template.TemplateContentControlTable;
 
 public class InsertContentControlUtil {
@@ -120,6 +122,9 @@ public class InsertContentControlUtil {
 
     public static void insertContentControlTableIntoTemplate(final TemplateContentControlTable tableVO,
             final WordprocessingMLPackage wordMLPackage, final TemplateContentControlLocationEnum locationEnum) {
+        if (tableVO == null) {
+            throw new TemplateContentControlException("TemplateContentControlTable is null");
+        }
 
         List<? extends ContentAccessor> partList = locationEnum.equals(TemplateContentControlLocationEnum.BODY)
                 ? Arrays.asList(wordMLPackage.getMainDocumentPart())
@@ -133,7 +138,8 @@ public class InsertContentControlUtil {
             return;
         }
 
-        List<Tbl> tableList = TemplateUtil.retrieveAllTbls(partList).get(tableVO.getTableTag());
+        List<Tbl> tableList = tableVO.isFlagExternalResource() ? retrieveCopyOfExternalTableList(tableVO)
+                : TemplateUtil.retrieveAllTbls(partList).get(tableVO.getTableTag());
 
         if (tableList == null || tableList.isEmpty()) {
             List<SdtElement> sdtElements = TemplateUtil.retrieveAllSdtElements(partList).get(tableVO.getTableTag());
@@ -179,6 +185,43 @@ public class InsertContentControlUtil {
                 addCopiedRowsToTable(table, copiedRows, rowParams);
             }
         }
+
+        if (tableVO.isFlagExternalResource()) {
+            final List<SdtElement> sdtElementList = TemplateUtil.retrieveAllSdtElements(partList)
+                    .get(tableVO.getTableTag());
+            for (SdtElement sdtElement : sdtElementList) {
+                sdtElement.getSdtContent().getContent().clear();
+                sdtElement.getSdtContent().getContent().addAll(tableList);
+            }
+        }
+    }
+
+    private static List<Tbl> retrieveCopyOfExternalTableList(final TemplateContentControlTable tableVO) {
+
+        if (StringUtils.isBlank(tableVO.getExternalFilename()) || StringUtils.isBlank(tableVO.getExternalPath())
+                || StringUtils.isBlank(tableVO.getExternalTableTag()) || tableVO.getExternalLocationTable() == null) {
+            throw new TemplateContentControlException(
+                    "Some required properties for external resources table is not available.");
+        }
+
+        WordprocessingMLPackage externalwordMLPackage = TemplateUtil
+                .retrieveWordprocessingMLPackage(tableVO.getExternalPath(), tableVO.getExternalFilename());
+
+        if (externalwordMLPackage == null) {
+            throw new TemplateContentControlException("File (" + tableVO.getExternalFilename() + ") in directory "
+                    + tableVO.getExternalPath() + " is either not valid or not exist.");
+        }
+
+        final List<? extends ContentAccessor> externalPartList = TemplateContentControlLocationEnum
+                .retrieveContentAccessor(tableVO.getExternalLocationTable(), externalwordMLPackage);
+
+        List<Tbl> tableList = TemplateUtil.retrieveAllTbls(externalPartList).get(tableVO.getExternalTableTag());
+
+        if (tableList == null || tableList.isEmpty()) {
+            throw new TemplateContentControlException("No Table with tag " + tableVO.getExternalTableTag() + " found.");
+        }
+
+        return tableList.stream().map(tbl -> XmlUtils.deepCopy(tbl)).collect(Collectors.toList());
     }
 
     private static void collectHeaderAndCopiedRows(Tbl table, List<Object> headerList, List<Object> copiedRows,
@@ -341,6 +384,15 @@ public class InsertContentControlUtil {
                 Object rowValue = tr;
                 if (tr instanceof JAXBElement<?>) {
                     rowValue = ((JAXBElement<?>) tr).getValue();
+                }
+                if (rowValue instanceof CTSdtCell && ((CTSdtCell) rowValue).getSdtContent() != null
+                        && ((CTSdtCell) rowValue).getSdtContent().getContent() != null
+                        && !((CTSdtCell) rowValue).getSdtContent().getContent().isEmpty()) {
+                    rowValue = ((CTSdtCell) rowValue).getSdtContent().getContent().get(0);
+
+                    if (rowValue instanceof JAXBElement<?>) {
+                        rowValue = ((JAXBElement<?>) rowValue).getValue();
+                    }
                 }
                 if (rowValue != null && rowValue instanceof Tc) {
                     Tc cell = (Tc) rowValue;
