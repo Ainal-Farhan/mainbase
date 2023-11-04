@@ -106,7 +106,8 @@ public class TemplateUtil {
             if (StringUtils.isBlank(filename)) {
                 return;
             }
-            templateWord = new TemplateWord(ProjectPathUtil.TEMPLATE_DIR, filename, keyTemplate, StringUtils.EMPTY);
+            templateWord = new TemplateWord(ProjectPathUtil.TEMPLATE_DIR, filename, keyTemplate, filename,
+                    StringUtils.EMPTY);
         }
 
         templateWord.setTemplateKey(keyTemplate);
@@ -158,8 +159,9 @@ public class TemplateUtil {
 
         if (templateWord.getWordprocessingMLPackage() != null) {
             try {
-                templateWord.getWordprocessingMLPackage().save(new File(
-                        ProjectPathUtil.TEMPLATE_OUTPUT_DIR + templateWord.getOutputDir(), templateWord.getFilename()));
+                templateWord.getWordprocessingMLPackage()
+                        .save(new File(ProjectPathUtil.TEMPLATE_OUTPUT_DIR + templateWord.getOutputFilePath(),
+                                templateWord.getOutputFilename()));
             } catch (Docx4JException e) {
             }
         }

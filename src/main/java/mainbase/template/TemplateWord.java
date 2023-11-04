@@ -22,19 +22,22 @@ public class TemplateWord implements Serializable {
 
     private WordprocessingMLPackage wordprocessingMLPackage;
 
-    private String filename;
-    private String filePath;
-    private String outputDir;
+    private String refFilename;
+    private String refFilePath;
+    private String outputFilePath;
+    private String outputFilename;
     private String templateKey;
 
     private Map<TemplateContentControlLocationEnum, List<? extends ContentAccessor>> contentAccessorsListMap;
 
-    public TemplateWord(String filePath, String filename, String templateKey, String outputDir) {
-        this.filePath = filePath;
-        this.filename = filename;
-        this.outputDir = outputDir == null ? StringUtils.EMPTY : outputDir;
+    public TemplateWord(String refFilePath, String refFilename, String templateKey, String outputFilename,
+            String outputFilePath) {
+        this.refFilePath = refFilePath;
+        this.refFilename = refFilename;
+        this.outputFilePath = outputFilePath == null ? StringUtils.EMPTY : outputFilePath;
+        this.outputFilename = outputFilename;
         this.templateKey = templateKey == null ? StringUtils.EMPTY : templateKey;
-        wordprocessingMLPackage = TemplateUtil.retrieveWordprocessingMLPackage(filePath, filename);
+        wordprocessingMLPackage = TemplateUtil.retrieveWordprocessingMLPackage(refFilePath, refFilename);
         contentAccessorsListMap = new HashMap<>();
 
         if (wordprocessingMLPackage != null) {
@@ -119,14 +122,6 @@ public class TemplateWord implements Serializable {
         this.wordprocessingMLPackage = wordprocessingMLPackage;
     }
 
-    public String getFilename() {
-        return filename;
-    }
-
-    public void setFilename(String filename) {
-        this.filename = filename;
-    }
-
     public Map<TemplateContentControlLocationEnum, List<? extends ContentAccessor>> getContentAccessorsListMap() {
         return contentAccessorsListMap;
     }
@@ -136,27 +131,43 @@ public class TemplateWord implements Serializable {
         this.contentAccessorsListMap = contentAccessorsListMap;
     }
 
-    public String getFilePath() {
-        return filePath;
-    }
-
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
-    }
-
-    public String getOutputDir() {
-        return outputDir;
-    }
-
-    public void setOutputDir(String outputDir) {
-        this.outputDir = outputDir;
-    }
-
     public String getTemplateKey() {
         return templateKey;
     }
 
     public void setTemplateKey(String templateKey) {
         this.templateKey = templateKey;
+    }
+
+    public String getRefFilename() {
+        return refFilename;
+    }
+
+    public void setRefFilename(String refFilename) {
+        this.refFilename = refFilename;
+    }
+
+    public String getRefFilePath() {
+        return refFilePath;
+    }
+
+    public void setRefFilePath(String refFilePath) {
+        this.refFilePath = refFilePath;
+    }
+
+    public String getOutputFilePath() {
+        return outputFilePath;
+    }
+
+    public void setOutputFilePath(String outputFilePath) {
+        this.outputFilePath = outputFilePath;
+    }
+
+    public String getOutputFilename() {
+        return outputFilename;
+    }
+
+    public void setOutputFilename(String outputFilename) {
+        this.outputFilename = outputFilename;
     }
 }

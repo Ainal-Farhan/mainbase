@@ -79,11 +79,10 @@ public class TemplateContentControlUtil {
                 case TEXT:
                     if (cc.getValue() != null && cc.getValue() instanceof String) {
                         cc.getLocationList().stream().forEach(loc -> {
-                            if (TemplateConfig.getInstance()
-                                    .retrieveIncludedContentControlTag(templateWord.getFilename(), loc, action) != null
-                                    && !TemplateConfig.getInstance()
-                                            .retrieveIncludedContentControlTag(templateWord.getFilename(), loc, action)
-                                            .isEmpty()) {
+                            if (TemplateConfig.getInstance().retrieveIncludedContentControlTag(
+                                    templateWord.getTemplateKey(), loc, action) != null
+                                    && !TemplateConfig.getInstance().retrieveIncludedContentControlTag(
+                                            templateWord.getTemplateKey(), loc, action).isEmpty()) {
                                 InsertContentControlUtil.insertValueForContentControlIntoTemplate(
                                         templateWord.getContentAccessorsListMap().get(loc), cc.getTag(),
                                         (String) cc.getValue());
@@ -94,11 +93,10 @@ public class TemplateContentControlUtil {
                 case IMAGE:
                     if (cc.getValue() != null && cc.getValue() instanceof byte[]) {
                         cc.getLocationList().stream().forEach(loc -> {
-                            if (TemplateConfig.getInstance()
-                                    .retrieveIncludedContentControlTag(templateWord.getFilename(), loc, action) != null
-                                    && !TemplateConfig.getInstance()
-                                            .retrieveIncludedContentControlTag(templateWord.getFilename(), loc, action)
-                                            .isEmpty()) {
+                            if (TemplateConfig.getInstance().retrieveIncludedContentControlTag(
+                                    templateWord.getTemplateKey(), loc, action) != null
+                                    && !TemplateConfig.getInstance().retrieveIncludedContentControlTag(
+                                            templateWord.getTemplateKey(), loc, action).isEmpty()) {
                                 InsertContentControlUtil.insertImageForContentControlIntoTemplate(
                                         templateWord.getWordprocessingMLPackage(),
                                         templateWord.getContentAccessorsListMap().get(loc), (byte[]) cc.getValue(),
@@ -115,11 +113,10 @@ public class TemplateContentControlUtil {
                     TemplateContentControlTable value = cc.retrieveValueAs(TemplateContentControlTable.class);
                     if (value != null) {
                         cc.getLocationList().stream().forEach(loc -> {
-                            if (TemplateConfig.getInstance()
-                                    .retrieveIncludedContentControlTag(templateWord.getFilename(), loc, action) != null
-                                    && !TemplateConfig.getInstance()
-                                            .retrieveIncludedContentControlTag(templateWord.getFilename(), loc, action)
-                                            .isEmpty()) {
+                            if (TemplateConfig.getInstance().retrieveIncludedContentControlTag(
+                                    templateWord.getTemplateKey(), loc, action) != null
+                                    && !TemplateConfig.getInstance().retrieveIncludedContentControlTag(
+                                            templateWord.getTemplateKey(), loc, action).isEmpty()) {
                                 InsertContentControlUtil.insertContentControlTableIntoTemplate(value,
                                         templateWord.getWordprocessingMLPackage(), loc);
                             }
