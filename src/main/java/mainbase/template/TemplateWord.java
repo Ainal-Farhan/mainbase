@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.docx4j.model.structure.SectionWrapper;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.FooterPart;
@@ -14,7 +15,6 @@ import org.docx4j.wml.ContentAccessor;
 
 import mainbase.enums.TemplateContentControlLocationEnum;
 import mainbase.util.docx4j.TemplateUtil;
-import mainbase.util.path.ProjectPathUtil;
 
 public class TemplateWord implements Serializable {
 
@@ -23,12 +23,18 @@ public class TemplateWord implements Serializable {
     private WordprocessingMLPackage wordprocessingMLPackage;
 
     private String filename;
+    private String filePath;
+    private String outputDir;
+    private String templateKey;
 
     private Map<TemplateContentControlLocationEnum, List<? extends ContentAccessor>> contentAccessorsListMap;
 
-    public TemplateWord(String filename) {
+    public TemplateWord(String filePath, String filename, String templateKey, String outputDir) {
+        this.filePath = filePath;
         this.filename = filename;
-        wordprocessingMLPackage = TemplateUtil.retrieveWordprocessingMLPackage(ProjectPathUtil.TEMPLATE_DIR, filename);
+        this.outputDir = outputDir == null ? StringUtils.EMPTY : outputDir;
+        this.templateKey = templateKey == null ? StringUtils.EMPTY : templateKey;
+        wordprocessingMLPackage = TemplateUtil.retrieveWordprocessingMLPackage(filePath, filename);
         contentAccessorsListMap = new HashMap<>();
 
         if (wordprocessingMLPackage != null) {
@@ -128,5 +134,29 @@ public class TemplateWord implements Serializable {
     public void setContentAccessorsListMap(
             Map<TemplateContentControlLocationEnum, List<? extends ContentAccessor>> contentAccessorsListMap) {
         this.contentAccessorsListMap = contentAccessorsListMap;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public String getOutputDir() {
+        return outputDir;
+    }
+
+    public void setOutputDir(String outputDir) {
+        this.outputDir = outputDir;
+    }
+
+    public String getTemplateKey() {
+        return templateKey;
+    }
+
+    public void setTemplateKey(String templateKey) {
+        this.templateKey = templateKey;
     }
 }

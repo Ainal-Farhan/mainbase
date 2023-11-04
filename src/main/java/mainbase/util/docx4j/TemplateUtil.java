@@ -4,10 +4,12 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -39,20 +41,38 @@ import mainbase.util.path.ProjectPathUtil;
 public class TemplateUtil {
     protected static Logger log = LoggerFactory.getLogger(TemplateContentControlUtil.class);
 
-    public static void processMultipleTemplateConcurrently(List<String> templateKeyList, int numThreads) {
-        if (templateKeyList == null || templateKeyList.isEmpty() || numThreads <= 0) {
+    /**
+     * This is the main method for processing multiple documents (docx)
+     * concurrently
+     * 
+     * @param templateKeyMap
+     *            This cannot be null.
+     * @param templateWordMap
+     *            This can be null or empty if all of the documents need to be
+     *            referred from the resource templates.
+     * @param numThreads
+     *            Please set the number of thread required.
+     */
+    public static void processMultipleTemplateConcurrently(Map<String, String> templateKeyMap,
+            Map<String, TemplateWord> templateWordMap, int numThreads) {
+        if (templateKeyMap == null || templateKeyMap.isEmpty() || numThreads <= 0) {
             return;
+        }
+
+        if (templateWordMap == null) {
+            templateWordMap = Collections.emptyMap();
         }
 
         ExecutorService executor = Executors.newFixedThreadPool(numThreads);
 
-        for (String templateKey : templateKeyList) {
+        for (Entry<String, String> entry : templateKeyMap.entrySet()) {
+            TemplateWord templateWord = templateWordMap.get(entry.getKey());
             executor.submit(() -> {
                 try {
-                    log.info("Start processing template: " + templateKey);
-                    processTemplate(templateKey);
+                    log.info("Start processing template: " + entry.getKey() + " (" + entry.getValue() + ")");
+                    processTemplate(entry.getKey(), entry.getValue(), templateWord);
                 } catch (Exception e) {
-                    log.error("Error processing template: " + templateKey, e);
+                    log.error("Error processing template: " + entry.getKey() + " (" + entry.getValue() + ")", e);
                 }
             });
         }
@@ -65,32 +85,48 @@ public class TemplateUtil {
         }
     }
 
-    public static void processTemplate(String keyTemplate) {
+    /**
+     * This is the main method for processing a document (docx)
+     * 
+     * @param keyTemplate
+     *            This cannot be null.
+     * @param action
+     *            This cannot be null.
+     * @param templateWord
+     *            Please set the value to null if you want to use the resource
+     *            template.
+     */
+    public static void processTemplate(String keyTemplate, String action, TemplateWord templateWord) {
         if (StringUtils.isBlank(keyTemplate)) {
             return;
         }
 
-        processTemplate(keyTemplate, TemplateConstant.TEMPLATE_PROCESS_METHOD_MAP.get(keyTemplate));
-    }
-
-    public static void processTemplate(String keyTemplate, TemplateProcessMethod docx4jProcessMethod) {
-        String filename = TemplateConfig.getInstance().retrieveFilename(keyTemplate);
-
-        if (StringUtils.isBlank(filename)) {
-            return;
+        if (templateWord == null) {
+            String filename = TemplateConfig.getInstance().retrieveFilename(keyTemplate);
+            if (StringUtils.isBlank(filename)) {
+                return;
+            }
+            templateWord = new TemplateWord(ProjectPathUtil.TEMPLATE_DIR, filename, keyTemplate, StringUtils.EMPTY);
         }
 
-        TemplateWord templateWord = new TemplateWord(filename);
+        templateWord.setTemplateKey(keyTemplate);
 
-        if (templateWord.getWordprocessingMLPackage() == null) {
+        processTemplate(templateWord, action, TemplateConstant.TEMPLATE_PROCESS_METHOD_MAP.get(keyTemplate));
+    }
+
+    private static void processTemplate(TemplateWord templateWord, String action,
+            TemplateProcessMethod docx4jProcessMethod) {
+        if (templateWord == null || templateWord.getWordprocessingMLPackage() == null
+                || StringUtils.isBlank(templateWord.getTemplateKey())) {
             return;
         }
 
         Map<String, TemplateContentControl> contentControlMap = new HashMap<>();
 
         templateWord.getContentAccessorsListMap().forEach((locationEnum, contentAccessor) -> {
-            TemplateConfig.getInstance().retrieveIncludedContentControlTag(keyTemplate, locationEnum,
-                    TemplateConstant.CREATE_TEMPLATE_ACTION).stream().forEach(tag -> {
+            TemplateConfig.getInstance()
+                    .retrieveIncludedContentControlTag(templateWord.getTemplateKey(), locationEnum, action).stream()
+                    .forEach(tag -> {
                         TemplateContentControl contentControl = contentControlMap.get(tag);
                         if (contentControl == null) {
                             contentControl = new TemplateContentControl(tag);
@@ -111,7 +147,7 @@ public class TemplateUtil {
 
         if (contentControlMap.values() != null && !contentControlMap.values().isEmpty()) {
             TemplateContentControlUtil.processContentControlAndInsert(new ArrayList<>(contentControlMap.values()),
-                    templateWord, filename, TemplateConstant.CREATE_TEMPLATE_ACTION);
+                    templateWord, action);
         }
 
         templateWord.synchronizedTheContentAccessorsList();
@@ -122,7 +158,8 @@ public class TemplateUtil {
 
         if (templateWord.getWordprocessingMLPackage() != null) {
             try {
-                templateWord.getWordprocessingMLPackage().save(new File(ProjectPathUtil.TEMPLATE_OUTPUT_DIR, filename));
+                templateWord.getWordprocessingMLPackage().save(new File(
+                        ProjectPathUtil.TEMPLATE_OUTPUT_DIR + templateWord.getOutputDir(), templateWord.getFilename()));
             } catch (Docx4JException e) {
             }
         }

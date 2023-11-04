@@ -1,6 +1,7 @@
 package mainbase.main;
 
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import mainbase.builder.viewobject.ExampleVOBuilder;
 import mainbase.constant.TemplateConstant;
@@ -14,7 +15,7 @@ import mainbase.viewobject.ExampleVO;
 public class Main {
 
     public static void main(String[] args) {
-        int example = 3;
+        int example = 5;
 
         switch (example) {
         case 1:
@@ -94,7 +95,8 @@ public class Main {
     private static void exampleDocx4j() {
         System.out.println("Start Example Docx Template:");
 
-        TemplateUtil.processTemplate(TemplateConstant.KEY_TEMPLATE_EXAMPLE_TABLE_CC);
+        TemplateUtil.processTemplate(TemplateConstant.KEY_TEMPLATE_EXAMPLE_TABLE_CC,
+                TemplateConstant.CREATE_TEMPLATE_ACTION, null);
 
         System.out.println("----------------------------\n");
     }
@@ -102,9 +104,17 @@ public class Main {
     private static void exampleDocx4jConcurrent() {
         System.out.println("Start Example Docx Template No 2 (Multiple Template Concurrently):");
 
-        TemplateUtil.processMultipleTemplateConcurrently(Arrays.asList(TemplateConstant.KEY_TEMPLATE_EXAMPLE_1,
-                "Test-Template3.docx", "Test-Template4.docx", "Test-Template5.docx", "Test-Template6.docx",
-                "Test-Template7.docx", "Test-Template8.docx", "Test-Template9.docx"), 4);
+        Map<String, String> templateMap = new HashMap<>();
+        templateMap.put(TemplateConstant.KEY_TEMPLATE_EXAMPLE_1, TemplateConstant.CREATE_TEMPLATE_ACTION);
+        templateMap.put("Test-Template3.docx", TemplateConstant.CREATE_TEMPLATE_ACTION);
+        templateMap.put("Test-Template4.docx", TemplateConstant.CREATE_TEMPLATE_ACTION);
+        templateMap.put("Test-Template5.docx", TemplateConstant.CREATE_TEMPLATE_ACTION);
+        templateMap.put("Test-Template6.docx", TemplateConstant.CREATE_TEMPLATE_ACTION);
+        templateMap.put("Test-Template7.docx", TemplateConstant.CREATE_TEMPLATE_ACTION);
+        templateMap.put("Test-Template8.docx", TemplateConstant.CREATE_TEMPLATE_ACTION);
+        templateMap.put("Test-Template9.docx", TemplateConstant.CREATE_TEMPLATE_ACTION);
+
+        TemplateUtil.processMultipleTemplateConcurrently(templateMap, null, 4);
 
         System.out.println("----------------------------\n");
     }

@@ -56,7 +56,7 @@ public class TemplateContentControlUtil {
     }
 
     public static void processContentControlAndInsert(List<TemplateContentControl> contentControlList,
-            TemplateWord templateWord, String templateName, String action) {
+            TemplateWord templateWord, String action) {
         contentControlList = filterPelupusanWordContentControlVOList(contentControlList);
 
         if (contentControlList == null || contentControlList.isEmpty()

@@ -30,6 +30,7 @@ public class TemplateConstant {
     static {
         Map<String, TemplateProcessMethod> templateProcessMethodMap = new HashMap<>();
         templateProcessMethodMap.put(KEY_TEMPLATE_EXAMPLE_1, TemplateContentControlMethodUtil::processExample1);
+        templateProcessMethodMap.put(KEY_TEMPLATE_EXAMPLE_TABLE_CC, TemplateContentControlMethodUtil::processExample1);
         TEMPLATE_PROCESS_METHOD_MAP = Collections.unmodifiableMap(templateProcessMethodMap);
 
         Map<String, TemplateContentControlMethod> wordContentControlMethod = new HashMap<>();
